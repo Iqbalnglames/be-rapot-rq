@@ -9,13 +9,21 @@ class Rapot extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
+
+    public function mapel()
+    {
+        return $this->belongsTo(Mapel::class);
+    }
+
+    public function nilai()
+    {
+        return $this->belongsTo(Nilai::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    public function santri()
-    {
-        return $this->belongsTo(Santri::class);
     }
 }

@@ -11,7 +11,7 @@ class SantriController extends Controller
 {
     public function index()
     {
-        $santri = Santri::with('kelas')->get();
+        $santri = Santri::with('kelas','nilai')->get();
 
         return response()->json([
             'success' => true,
@@ -20,11 +20,24 @@ class SantriController extends Controller
         ]);
     }
 
+    public  function detail($slug)
+    {
+        $santri = Santri::findOrFail($slug);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'data santri atas nama ' . $santri->nama_santri,
+            'data' => $santri
+        ]);
+    }
+
     public function create(Request $request)
     {
         $validator = Validator::make($request->all(),[
             'NIS' => 'required',
-            'nama_santri' => 'required',
+            'nama' => 'required',
+            'alamat' => 'required',
+            'nama_ortu' => 'required',
             'kelas_id' => 'required',
         ]);
 
@@ -35,9 +48,11 @@ class SantriController extends Controller
 
         $santri = Santri::create([
             'NIS' => $request->NIS,
-            'nama_santri' => $request->nama_santri,
+            'nama' => $request->nama,
+            'nama_ortu' => $request->nama_ortu,
+            'alamat' => $request->alamat,
             'kelas_id' => $request->kelas_id,
-            'slug' => Str::slug($request->nama_santri),
+            'slug' => Str::slug($request->nama),
         ]);
 
         return response()->json([
@@ -66,6 +81,7 @@ class SantriController extends Controller
             'NIS' => $request->NIS,
             'nama_santri' => $request->nama_santri,
             'kelas_id' => $request->kelas_id,
+            'rapot_id' => $request->rapot_id,
             'slug' => Str::slug($request->nama_santri),
         ]);
 
@@ -80,5 +96,10 @@ class SantriController extends Controller
     {
         $santri = Santri::where('slug', $slug)->first();
         $santri->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data santri atas nama '.$santri->nama_santri. ' berhasil dihapus',
+        ]);
     }
 }

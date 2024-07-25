@@ -9,8 +9,19 @@ class Mapel extends Model
 {
     use HasFactory;
 
-    public function rapot()
+    protected $guarded = [];
+
+    public function kategoriMapel()
     {
-        return $this->belongsToMany(Nilai::class, 'rapots');
+        return $this->belongsTo(KategoriMapel::class);
+    }
+
+    public function santri()
+    {
+        return $this->belongsToMany(Rapot::class, 'rapots');
+    }
+    public function nilai()
+    {
+        return $this->hasMany(Nilai::class);
     }
 }

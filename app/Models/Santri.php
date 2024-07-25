@@ -11,19 +11,19 @@ class Santri extends Model
 
     protected $guarded = [];
 
-    public function mapel()
+    public function kelas()
     {
-        return $this->belongsToMany(Mapel::class, 'rapots');
+        return $this->belongsTo(Kelas::class);
+    }
+    
+    public function rapot()
+    {
+        return $this->belongsTo(Rapot::class);
     }
 
     public function nilai()
     {
         return $this->belongsToMany(Nilai::class, 'rapots');
     }
-    public function kelas()
-    {
-        return $this->belongsTo(Kelas::class);
-    }
-
     
 }

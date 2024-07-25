@@ -11,15 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('nilais', function (Blueprint $table) {
+        Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('semester');            
-            $table->string('tugas_1');
-            $table->string('tugas_2');
-            $table->string('tugas_3');
-            $table->string('UTS');
-            $table->string('UAS');
-            $table->string('sikap');
+            $table->string('nama_role');
+            $table->string('slug');
             $table->timestamps();
         });
     }
@@ -29,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('nilais');
+        Schema::dropIfExists('roles');
     }
 };

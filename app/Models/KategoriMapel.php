@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class KategoriMapel extends Model
 {
     use HasFactory;
+
+    public function mapel()
+    {
+        return $this->hasMany(Mapel::class);
+    }
 }

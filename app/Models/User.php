@@ -31,6 +31,6 @@ class User extends Authenticatable
 
     public function rapot()
     {
-        return $this->hasMany(Rapot::class);
+        return $this->belongsToMany(Nilai::class, 'rapots');
     }
 }

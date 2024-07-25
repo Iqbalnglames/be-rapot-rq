@@ -5,19 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserRole extends Model
+class Semester extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
     
-    public function role()
+    public function rapot()
     {
-        return $this->belongsTo(Role::class);
-    }
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(Rapot::class);
     }
 }

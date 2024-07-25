@@ -14,14 +14,15 @@ return new class extends Migration
         Schema::create('santris', function (Blueprint $table) {
             $table->id();
             $table->string('NIS');
-            $table->string('nama_santri');
+            $table->string('nama');
+            $table->string('alamat');
+            $table->string('nama_ortu');
             $table->string('slug');
-            $table->string('sakit');
-            $table->string('izin');
-            $table->string('tanpa_keterangan');
-            $table->string('kelas_id');
-            $table->text('catatan_walkel');
+            $table->unsignedBigInteger('kelas_id');
+
             $table->timestamps();
+
+            $table->foreign('kelas_id')->references('id')->on('kelas');
         });
     }
 
