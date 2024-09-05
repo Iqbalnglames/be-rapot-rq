@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('NIS');
             $table->string('nama');
-            $table->string('alamat');
+            $table->text('alamat');
             $table->string('nama_ortu');
             $table->string('slug');
             $table->unsignedBigInteger('kelas_id');

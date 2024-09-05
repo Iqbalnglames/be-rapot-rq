@@ -11,7 +11,7 @@ class SantriController extends Controller
 {
     public function index()
     {
-        $santri = Santri::with('kelas','nilai')->get();
+        $santri = Santri::with('kelas')->get();
 
         return response()->json([
             'success' => true,
@@ -20,7 +20,7 @@ class SantriController extends Controller
         ]);
     }
 
-    public  function detail($slug)
+    public function detail($slug)
     {
         $santri = Santri::findOrFail($slug);
 
@@ -33,17 +33,22 @@ class SantriController extends Controller
 
     public function create(Request $request)
     {
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'NIS' => 'required',
             'nama' => 'required',
             'alamat' => 'required',
             'nama_ortu' => 'required',
             'kelas_id' => 'required',
+        ], [
+            'NIS.required' => 'Nomer Induk Santri Wajib Diisi!',
+            'nama.required' => 'Nama Santri Wajib Diisi!',
+            'alamat.required' => 'Alamat Wajib Diisi!',
+            'nama_ortu.required' => 'Nama Orang Tua Wajib Diisi!',
+            'kelas_id.required' => 'Pilih kelas terlebih dahulu!',
         ]);
 
-        if($validator->fails())
-        {
-            return response()->json([$validator->errors(), 422]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
         }
 
         $santri = Santri::create([
@@ -66,14 +71,13 @@ class SantriController extends Controller
     {
         $santri = Santri::where('slug', $slug)->first();
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'NIS' => 'required',
             'nama_santri' => 'required',
             'kelas_id' => 'required',
         ]);
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
@@ -99,7 +103,7 @@ class SantriController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Data santri atas nama '.$santri->nama_santri. ' berhasil dihapus',
+            'message' => 'Data santri atas nama ' . $santri->nama . ' berhasil dihapus',
         ]);
     }
 }

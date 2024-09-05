@@ -18,10 +18,14 @@ return new class extends Migration
             $table->integer('tugas_3');
             $table->integer('UTS');
             $table->integer('UAS');
+            $table->unsignedBigInteger('semester_id');
+            $table->unsignedBigInteger('kelas_id');
             $table->unsignedBigInteger('mapel_id')->nullable();
             $table->timestamps();
 
             $table->foreign('mapel_id')->references('id')->on('mapels');
+            $table->foreign('kelas_id')->references('id')->on('kelas');
+            $table->foreign('semester_id')->references('id')->on('semesters');
         });
     }
 

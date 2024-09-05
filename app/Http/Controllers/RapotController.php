@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Kelas;
-use App\Models\Mapel;
 use App\Models\Nilai;
 use App\Models\Rapot;
 use App\Models\Santri;
@@ -14,45 +12,43 @@ class RapotController extends Controller
 {
     public function index($slug)
     {
-        $santri = Santri::where('slug', $slug)->first();
-
-        if(!$santri || !$santri->rapot_id)
-        {
-            return response()->json([
-                'success' => false,
-                'message' => 'data rapot tidak ditemukan',
-            ]);
-        }
-
-        $rapots = Rapot::with(['nilai', 'semester', 'user'])->find($santri->rapot_id);
+        $santri = Santri::with(['kelas', 'nilai.mapel', 'nilai.semester'])->where('slug', $slug)->first();
 
         return response()->json([
             'success' => true,
-            'message' => 'list data rapot santri',
-            'data' => $rapots
+            'message' => 'data rapot santri',
+            'data' => $santri,
         ]);
     }
 
     public function store(Request $request, $slug)
     {
         $santri = Santri::where('slug', $slug)->firstOrFail();
-
-        $request->validate([
-            'tugas_1' => 'required|numeric',
-            'tugas_2' => 'required|numeric',
-            'tugas_3' => 'required|numeric',
-            'UTS' => 'required|numeric',
-            'UAS' => 'required|numeric',
+        $validateNumeric = 'required|numeric';
+        $validator = Validator::make($request->all(), [
+            'tugas_1' => $validateNumeric,
+            'tugas_2' => $validateNumeric,
+            'tugas_3' => $validateNumeric,
+            'UTS' => $validateNumeric,
+            'UAS' => $validateNumeric,
             'mapel_id' => 'required|exists:mapels,id'
         ]);
-    
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $nilaiUas = round(($request->tugas_1 * 0.1) + ($request->tugas_1 * 0.1) + ($request->tugas_3 * 0.1) + ($request->UTS * 0.2) + ($request->UAS * 0.5));
+
         // Buat data Nilai
         $nilai = Nilai::create([
+            'kelas_id' => $request->kelas_id,
+            'semester_id' => $request->semester_id,
             'tugas_1' => $request->tugas_1,
             'tugas_2' => $request->tugas_2,
             'tugas_3' => $request->tugas_3,
             'UTS' => $request->UTS,
-            'UAS' => $request->UAS,
+            'UAS' => $nilaiUas,
             'mapel_id' => $request->mapel_id,
         ]);
 
@@ -60,7 +56,7 @@ class RapotController extends Controller
             'santri_id' => $santri->id,
             'nilai_id' => $nilai->id,
         ]);
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Nilai berhasil ditambahkan',
@@ -70,24 +66,39 @@ class RapotController extends Controller
 
     public function update(Request $request, $id)
     {
-        $nilai = Rapot::findOrFail($id);
+        $nilai = Nilai::findOrFail($id);
 
+        $validateNumeric = 'required|numeric';
         $validator = Validator::make($request->all(), [
-            'santri_id' => 'required',
+            'tugas_1' => $validateNumeric,
+            'tugas_2' => $validateNumeric,
+            'tugas_3' => $validateNumeric,
+            'UTS' => $validateNumeric,
+            'UAS' => $validateNumeric,
+            'mapel_id' => 'required|exists:mapels,id'
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $data = $nilai->update([
-            'santri_id' => $request->santri_id,
+        $nilaiUas = round(($request->tugas_1 * 0.1) + ($request->tugas_1 * 0.1) + ($request->tugas_3 * 0.1) + ($request->UTS * 0.2) + ($request->UAS * 0.5));
+
+        $nilai->update([
+            'kelas_id' => $request->kelas_id,
+            'semester_id' => $request->semester_id,
+            'tugas_1' => $request->tugas_1,
+            'tugas_2' => $request->tugas_2,
+            'tugas_3' => $request->tugas_3,
+            'UTS' => $request->UTS,
+            'UAS' => $nilaiUas,
+            'mapel_id' => $request->mapel_id,
         ]);
 
         return response()->json([
             'success' => true,
-            'message' => 'nilai berhasil diperbarui',
-            'data' => $data
+            'message' => 'Nilai berhasil diupdate',
+            'data' => $nilai
         ]);
     }
 

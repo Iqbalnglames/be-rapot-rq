@@ -14,11 +14,12 @@ class MapelSeeder extends Seeder
      */
     public function run(): void
     {
-        $mapel = ['MTK', 'IPA', 'IPS'];
+        $mapel = ['MTK', 'IPA', 'IPS', 'Akidah', 'Bahasa Arab'];
         for($i = 0; $i < $mapel; $i++)
         {
             DB::table('mapels')->insert([
                 'nama_mapel' => $mapel[$i],
+                'KKM' => "75",
                 'slug' => Str::slug($mapel[$i]),
             ]);
         }
