@@ -24,6 +24,7 @@ class RapotController extends Controller
     public function store(Request $request, $slug)
     {
         $santri = Santri::where('slug', $slug)->firstOrFail();
+
         $validateNumeric = 'required|numeric';
         $validator = Validator::make($request->all(), [
             'tugas_1' => $validateNumeric,
@@ -31,14 +32,18 @@ class RapotController extends Controller
             'tugas_3' => $validateNumeric,
             'UTS' => $validateNumeric,
             'UAS' => $validateNumeric,
-            'mapel_id' => 'required|exists:mapels,id'
+            'KKM' => $validateNumeric,
+            'mapel_id' => 'required',
+            'tahun_ajaran_id' => $validateNumeric,
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $nilaiUas = round(($request->tugas_1 * 0.1) + ($request->tugas_1 * 0.1) + ($request->tugas_3 * 0.1) + ($request->UTS * 0.2) + ($request->UAS * 0.5));
+        $nilaiTotal = round(($request->tugas_1 * 0.1) + ($request->tugas_1 * 0.1) + ($request->tugas_3 * 0.1) + ($request->UTS * 0.2) + ($request->UAS * 0.5));
+        $isRemed = $nilaiTotal < $request->KKM ? true : false;
+        $nilaiUasFinal = $isRemed ? $request->KKM : $nilaiTotal;
 
         // Buat data Nilai
         $nilai = Nilai::create([
@@ -48,8 +53,11 @@ class RapotController extends Controller
             'tugas_2' => $request->tugas_2,
             'tugas_3' => $request->tugas_3,
             'UTS' => $request->UTS,
-            'UAS' => $nilaiUas,
+            'UAS' => $request->UAS,
+            'total' => $nilaiUasFinal,
+            'isRemed' => $isRemed,
             'mapel_id' => $request->mapel_id,
+            'tahun_ajaran_id' => $request->tahun_ajaran_id,
         ]);
 
         $rapot = Rapot::create([
@@ -75,14 +83,14 @@ class RapotController extends Controller
             'tugas_3' => $validateNumeric,
             'UTS' => $validateNumeric,
             'UAS' => $validateNumeric,
-            'mapel_id' => 'required|exists:mapels,id'
+            'mapel_id' => $validateNumeric
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
-        $nilaiUas = round(($request->tugas_1 * 0.1) + ($request->tugas_1 * 0.1) + ($request->tugas_3 * 0.1) + ($request->UTS * 0.2) + ($request->UAS * 0.5));
+        $nilaiTotal = round(($request->tugas_1 * 0.1) + ($request->tugas_1 * 0.1) + ($request->tugas_3 * 0.1) + ($request->UTS * 0.2) + ($request->UAS * 0.5));
 
         $nilai->update([
             'kelas_id' => $request->kelas_id,
@@ -91,8 +99,10 @@ class RapotController extends Controller
             'tugas_2' => $request->tugas_2,
             'tugas_3' => $request->tugas_3,
             'UTS' => $request->UTS,
-            'UAS' => $nilaiUas,
+            'UAS' => $request->UAS,
+            'total' => $nilaiTotal,
             'mapel_id' => $request->mapel_id,
+            'tahun_ajaran_id' => $request->tahun_ajaran_id
         ]);
 
         return response()->json([

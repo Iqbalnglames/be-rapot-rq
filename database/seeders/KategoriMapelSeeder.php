@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class KategoriMapelSeeder extends Seeder
 {
@@ -13,11 +14,12 @@ class KategoriMapelSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('kategori_mapels')->insert(
-        
-        [
-            'kategori_mapel' => 'Pendidikan Umum',
-            'slug' => 'pendidikan-umum'
-        ]);
+        $kategori = ['Pendidikan Umum', 'Pendidikan Agama'];
+        for ($i = 0; $i < count($kategori); $i++) {
+            DB::table('kategori_mapels')->insert([
+                'kategori_mapel' => $kategori[$i],
+                'slug' => Str::slug($kategori[$i]),
+            ]);
+        }
     }
 }

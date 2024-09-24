@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::create('rapots', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('semester_id')->nullable();
             $table->unsignedBigInteger('santri_id')->nullable();
             $table->unsignedBigInteger('nilai_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->timestamps();
 
-            $table->foreign('semester_id')->references('id')->on('semesters')->onDelete('cascade');
             $table->foreign('nilai_id')->references('id')->on('nilais')->onDelete('cascade');
             $table->foreign('santri_id')->references('id')->on('santris')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

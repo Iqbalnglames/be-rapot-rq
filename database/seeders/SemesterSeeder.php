@@ -14,10 +14,10 @@ class SemesterSeeder extends Seeder
      */
     public function run(): void
     {
-        for($i = 0; $i <= 2; $i++){
+        for ($i = 1; $i <= 2; $i++) {
             DB::table('semesters')->insert([
-                'nama_semester' => 'semester'.$i,
-                'slug' => 'semester-'.$i,
+                'nama_semester' => 'semester' . $i,
+                'slug' => 'semester-' . $i,
             ]);
         }
     }
