@@ -9,6 +9,8 @@ class KategoriMapel extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function mapel()
     {
         return $this->hasMany(Mapel::class);

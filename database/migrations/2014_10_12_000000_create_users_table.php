@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -15,9 +16,11 @@ return new class extends Migration
             $table->id();
             $table->string('username')->unique();
             $table->string('name');
+            $table->string('slug');
             $table->string('email');
-            $table->string('password');
+            $table->string('password')->default(Hash::make('guru123'));
             $table->boolean('isActive')->default(false);
+            $table->string('tanda_tangan')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

@@ -20,13 +20,18 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'email_verified_at' => 'datetime',
+        // 'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'user_roles');
+    }
+
+    public function mapels()
+    {
+        return $this->belongsToMany(Mapel::class, 'user_mapels');
     }
 
     public function rapot()

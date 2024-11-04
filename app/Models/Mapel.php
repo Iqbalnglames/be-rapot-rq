@@ -16,10 +16,21 @@ class Mapel extends Model
         return $this->belongsTo(KategoriMapel::class);
     }
 
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_mapels');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsToMany(Kelas::class, 'kelas_mapels');
+    }
+
     public function santri()
     {
         return $this->belongsToMany(Rapot::class, 'rapots');
     }
+
     public function nilai()
     {
         return $this->hasMany(Nilai::class);

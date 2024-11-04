@@ -16,7 +16,8 @@ class KelasSeeder extends Seeder
         for($i = 7; $i <= 12; $i++){
             DB::table('kelas')->insert([
                 'kelas' => 'Kelas '.$i,
-                'slug' => 'kelas-'.$i
+                'slug' => 'kelas-'.$i,
+                'kkm' => 76
             ]);
         }
     }

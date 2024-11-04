@@ -9,8 +9,15 @@ class Kelas extends Model
 {
     use HasFactory;
 
+    protected $guarded = [];
+
     public function santri()
     {
         return $this->hasMany(Santri::class);
+    }
+
+    public function mapel()
+    {
+        return $this->belongsToMany(Mapel::class, 'kelas_mapels');
     }
 }

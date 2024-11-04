@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Mail\ActivateMail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,12 +15,36 @@ class UserController extends Controller
 {
     public function index()
     {
-        $user = User::all();
+        $user = User::with('roles', 'mapels')->get();
         $user->makeHidden(['password', 'username']);
 
         return response()->json([
             'success' => true,
             'message' => 'list data asatidzah',
+            'data' => $user,
+        ]);
+    }
+
+    public function detail($slug)
+    {
+        $user = User::where('slug', $slug)->first();
+        $user->makeHidden(['password', 'username']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'detail data ' . $user->name,
+            'data' => $user,
+        ]);
+    }
+
+    public function edit($slug)
+    {
+        $user = User::where('slug', $slug)->first();
+        $user->makeHidden(['password']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'detail data ' . $user->name,
             'data' => $user,
         ]);
     }
@@ -30,7 +55,6 @@ class UserController extends Controller
             'name' => 'required',
             'username' => 'required | unique:users',
             'email' => 'required | email',
-            'password' => 'required',
         ]);
 
         if ($validate->fails()) {
@@ -39,9 +63,11 @@ class UserController extends Controller
 
         $user = User::create([
             'username' => $request->username,
+            'slug' => Str::slug($request->name),
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'isActive' => $request->isActive ? $request->isActive : 0,
         ]);
 
         $data = [
@@ -50,7 +76,9 @@ class UserController extends Controller
             'body' => 'ada akun baru dengan username ' . $user->username . ', periksa dan aktivasi jika data valid'
         ];
 
-        Mail::to('mi06514@gmail.com')->send(new ActivateMail($data));
+        if (!$request->isActive) {
+            Mail::to($user->email)->send(new ActivateMail($data));
+        }
 
         return response()->json([
             'success' => true,
@@ -60,26 +88,26 @@ class UserController extends Controller
         ]);
     }
 
-    public function activateAccount(Request $request, $slug)
+    public function activateAccount(Request $request, $id)
     {
         $validate = Validator::make($request->all(), [
-            'isActivate' => 'required',
+            'isActive' => 'required',
         ]);
 
         if ($validate->fails()) {
             return response()->json($validate->errors(), 422);
         }
 
-        $user = User::where('slug', $slug)->first();
+        $user = User::findOrFail($id);
 
         $user->update([
-            'isActivate' => $request->isActive
+            'isActive' => $request->isActive
         ]);
 
         $data = [
             'subject' => 'Aktivasi Akun Antum',
             'title' => 'Aktivasi Akun ' . $user->username,
-            'body' => 'Alhamdulillah, akun antum dengan username ' . $user->username . 'sudah bisa digunakan'
+            'body' => 'Alhamdulillah, akun antum dengan username ' . $user->username . ' sudah bisa digunakan'
         ];
 
         Mail::to($user->email)->send(new ActivateMail($data));
@@ -94,9 +122,11 @@ class UserController extends Controller
     {
         $validate = Validator::make($request->all(), [
             'name' => 'required',
-            'username' => 'required | unique:users',
+            'username' => 'required',
             'email' => 'required | email',
-            'password' => 'required',
+            'password' => 'required|min:6|confirmed',
+            'password_confirmation' => 'required|min:6'
+
         ]);
 
         if ($validate->fails()) {
@@ -121,31 +151,9 @@ class UserController extends Controller
         ]);
     }
 
-    public function updateRole(Request $request, $slug)
-    {
-        $validate = Validator::make($request->all(), [
-            'role_id' => 'required | array',
-            'user_id' => 'required'
-        ]);
-
-        if ($validate->fails()) {
-            return response()->json($validate->errors(), 422);
-        }
-
-        $user = User::where('slug', $slug)->first();
-
-        $user->roles()->sync($request->role_id);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'sukses mengupdate role user',
-            'data' => $user,
-        ]);
-    }
-
     public function login(Request $request)
     {
-        
+
         $validate = Validator::make($request->all(), [
             'username' => 'required',
             'password' => 'required',
@@ -153,17 +161,17 @@ class UserController extends Controller
             'username.required' => 'isi username anda',
             'password.required' => 'isi password anda',
         ]);
-        
+
         if ($validate->fails()) {
             return response()->json($validate->errors(), 422);
         }
-        
+
         $user = User::where('username', $request->username)->firstOrFail();
         if (!Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
                 'message' => 'unauthorized'
             ], 401);
-        } elseif($user->isActive === 0){
+        } elseif ($user->isActive === 0) {
             return response()->json([
                 'message' => 'akun antum belum diaktivasi'
             ], 401);
