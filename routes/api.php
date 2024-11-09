@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
-        $user = $request->user()->load('roles', 'mapels');
+        $user = $request->user()->load('roles', 'mapels.kelas', 'kelas');
         return response()->json($user);
     });
     Route::post('/logout', [UserController::class, 'logout']);
@@ -28,10 +28,12 @@ Route::post('/login', [UserController::class, 'login']);
 Route::post('/register', [UserController::class, 'register']);
 Route::post('/{user}/activate', [UserController::class, 'activateAccount']);
 Route::post('/{user}/update', [UserController::class, 'update']);
+Route::get('/{user:slug}/delete', [UserController::class, 'delete']);
 Route::post('/{user:slug}/update-role', [AsatidzahController::class, 'updateRole']);
 Route::post('/{user:slug}/update-signature', [AsatidzahController::class, 'signatureUpload']);
 Route::post('/{user:slug}/update-mapel-ajar', [AsatidzahController::class, 'updateMapelAjar']);
 Route::get('/{user:slug}/mapel-ajar', [AsatidzahController::class, 'detailMapelAjar']);
+Route::get('/show-kepsek', [AsatidzahController::class, 'showKepSek']);
 
 Route::get('/mapel', [MapelController::class, 'indexMapel']);
 Route::get('/kategori-mapel', [MapelController::class, 'index']);
@@ -40,17 +42,18 @@ Route::post('/mapel', [MapelController::class, 'store']);
 Route::get('/mapel/{mapel:slug}', [MapelController::class, 'detailMapel']);
 
 Route::get('/santri', [SantriController::class, 'index']);
+Route::get('/santri/{santri:kelas}', [SantriController::class, 'indexSantriKelasBased']);
 Route::post('/santri/add', [SantriController::class, 'create']);
 Route::get('/santri/{santri:slug}/detail', [SantriController::class, 'detail']);
 Route::put('/santri/{santri:slug}/update', [SantriController::class, 'update']);
-Route::delete('/santri/{santri:slug}/delete', [SantriController::class, 'delete']);
+Route::get('/santri/{santri:slug}/delete', [SantriController::class, 'delete']);
 
 Route::get('/rapot/{rapot:slug}', [RapotController::class, 'index']);
 Route::post('/rapot/add/{rapot:slug}', [RapotController::class, 'store']);
 Route::post('/rapot/{rapot}/update', [RapotController::class, 'update']);
 Route::get('/rapot/{rapot}/delete', [RapotController::class, 'delete']);
 
-Route::get('/nilai', [NilaiController::class, 'indexNilai']);
+Route::get('/nilai/{nilai:kelas}', [NilaiController::class, 'indexNilai']);
 Route::get('/nilai/mapel/{nilai:slug}', [NilaiController::class, 'detailMapel']);
 
 Route::get('/kelas', [KelasController::class, 'index']);

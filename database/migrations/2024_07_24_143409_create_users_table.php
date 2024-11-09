@@ -21,8 +21,11 @@ return new class extends Migration
             $table->string('password')->default(Hash::make('guru123'));
             $table->boolean('isActive')->default(false);
             $table->string('tanda_tangan')->nullable();
+            $table->unsignedBigInteger('kelas_id')->nullable();
             $table->rememberToken();
             $table->timestamps();
+
+            $table->foreign('kelas_id')->references('id')->on('kelas');
         });
     }
 

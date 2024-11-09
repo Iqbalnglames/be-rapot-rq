@@ -38,4 +38,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Nilai::class, 'rapots');
     }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class);
+    }
 }

@@ -20,6 +20,16 @@ class SantriController extends Controller
         ]);
     }
 
+    public function indexSantriKelasBased($kelas)
+    {
+        $santri = Santri::where('kelas_id', $kelas)->get();
+        return response()->json([
+            'success' => true,
+            'message' => 'list Data Santri',
+            'data' => $santri,
+        ]);
+    }
+
     public function detail($slug)
     {
         $santri = Santri::findOrFail($slug);

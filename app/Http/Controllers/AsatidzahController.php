@@ -14,10 +14,10 @@ class AsatidzahController extends Controller
             'tanda_tangan' => 'required|image'
         ]);
 
-        $image = $request->file('image');
+        $image = $request->file('tanda_tangan');
         $image->storeAs('public/tanda-tangan', $image->hashName());
 
-        $user = User::where('slug', $slug);
+        $user = User::where('slug', $slug)->first();
 
         $user->update([
             'tanda_tangan' => $image->hashName(),
@@ -44,11 +44,26 @@ class AsatidzahController extends Controller
         $user = User::where('slug', $slug)->first();
 
         $user->roles()->sync($roleId);
+        $user->update([
+            'kelas_id' => $request->kelas_id,
+        ]);
 
         return response()->json([
             'success' => true,
             'message' => 'sukses mengupdate role user',
             'data' => $user,
+        ]);
+    }
+
+    public function showKepSek()
+    {
+        $kepsek = User::whereHas('roles', function ($query) {
+            $query->where('nama_role', 'Kepala Sekolah');
+        })->first();
+
+        return response()->json([
+            'success' => true,
+            'data' => $kepsek
         ]);
     }
 

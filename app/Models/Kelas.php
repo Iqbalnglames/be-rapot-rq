@@ -20,4 +20,14 @@ class Kelas extends Model
     {
         return $this->belongsToMany(Mapel::class, 'kelas_mapels');
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
 }

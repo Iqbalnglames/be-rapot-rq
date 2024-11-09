@@ -15,7 +15,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $user = User::with('roles', 'mapels')->get();
+        $user = User::with('roles', 'mapels', 'kelas')->get();
         $user->makeHidden(['password', 'username']);
 
         return response()->json([
@@ -61,6 +61,10 @@ class UserController extends Controller
             return response()->json($validate->errors(), 422);
         }
 
+        $admin = User::whereHas('roles', function ($query) {
+            $query->where('nama_role', 'admin');
+        })->first();
+
         $user = User::create([
             'username' => $request->username,
             'slug' => Str::slug($request->name),
@@ -77,7 +81,7 @@ class UserController extends Controller
         ];
 
         if (!$request->isActive) {
-            Mail::to($user->email)->send(new ActivateMail($data));
+            Mail::to($admin->email)->send(new ActivateMail($data));
         }
 
         return response()->json([
@@ -151,6 +155,19 @@ class UserController extends Controller
         ]);
     }
 
+    public function delete($slug)
+    {
+        $user = User::where('slug', $slug)->first();
+        $user->roles()->detach($user->roles);
+        $user->mapels()->detach($user->mapels);
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data User atas nama ' . $user->name . ' berhasil dihapus',
+        ]);
+    }
+
     public function login(Request $request)
     {
 
@@ -166,10 +183,10 @@ class UserController extends Controller
             return response()->json($validate->errors(), 422);
         }
 
-        $user = User::where('username', $request->username)->firstOrFail();
+        $user = User::where('username', $request->username)->first();
         if (!Auth::attempt($request->only('username', 'password'))) {
             return response()->json([
-                'message' => 'unauthorized'
+                'message' => 'username atau password salah'
             ], 401);
         } elseif ($user->isActive === 0) {
             return response()->json([

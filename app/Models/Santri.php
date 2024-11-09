@@ -15,7 +15,7 @@ class Santri extends Model
     {
         return $this->belongsTo(Kelas::class);
     }
-    
+
     public function rapot()
     {
         return $this->belongsTo(Rapot::class);
@@ -25,5 +25,9 @@ class Santri extends Model
     {
         return $this->belongsToMany(Nilai::class, 'rapots');
     }
-    
+
+    public function catatan()
+    {
+        return $this->hasMany(CatatanSantri::class);
+    }
 }
