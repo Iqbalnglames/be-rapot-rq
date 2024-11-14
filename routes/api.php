@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AsatidzahController;
+use App\Http\Controllers\CatatanSantriController;
 use App\Http\Controllers\KelasController;
 use App\Http\Controllers\MapelController;
 use App\Http\Controllers\NilaiController;
@@ -64,3 +65,6 @@ Route::post('/role', [RoleController::class, 'store']);
 
 Route::get('/tahun-ajaran', [TahunAjaranController::class, 'index']);
 Route::post('/tahun-ajaran', [TahunAjaranController::class, 'store']);
+
+Route::post('/{catatan:slug}/simpan-catatan', [CatatanSantriController::class, 'store']);
+Route::post('/{catatan:slug}/update-catatan', [CatatanSantriController::class, 'update']);

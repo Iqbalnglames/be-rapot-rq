@@ -11,8 +11,8 @@ class CatatanSantri extends Model
 
     protected $guarded = [];
 
-    public function mapel()
+    public function santri()
     {
-        return $this->belongsTo(Mapel::class);
+        return $this->belongsTo(Santri::class);
     }
 }
