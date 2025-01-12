@@ -21,6 +21,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [UserController::class, 'logout']);
 });
 
+Route::get('/tanda-tangan/{filename}', function ($filename) {
+    $imagePath = public_path('storage/tanda-tangan/' . $filename);
+    if (file_exists($imagePath)) {
+        return response()->file($imagePath);
+    } else {
+        return response('Image not found', 404);
+    }
+});
 Route::get('/asatidzah', [UserController::class, 'index']);
 Route::get('/user/{user:slug}/detail', [UserController::class, 'detail']);
 Route::get('/user/{user:slug}/edit', [UserController::class, 'edit']);

@@ -128,13 +128,20 @@ class UserController extends Controller
             'name' => 'required',
             'username' => 'required',
             'email' => 'required | email',
-            'password' => 'required|min:6|confirmed',
-            'password_confirmation' => 'required|min:6'
+            'password' => 'required',
+            'new_password' => 'required|min:6|confirmed',
+            'new_password_confirmation' => 'required|min:6'
 
         ]);
 
         if ($validate->fails()) {
             return response()->json($validate->errors(), 422);
+        }
+
+        if (!Auth::attempt($request->only('username', 'password'))) {
+            return response()->json([
+                'message' => 'password salah'
+            ], 401);
         }
 
         $user = User::where('slug', $slug)->first();
@@ -143,7 +150,7 @@ class UserController extends Controller
             'username' => $request->username,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'password' => Hash::make($request->new_password),
             'isActive' => $user->isActive,
         ]);
 

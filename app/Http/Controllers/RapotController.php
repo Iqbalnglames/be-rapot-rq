@@ -54,8 +54,8 @@ class RapotController extends Controller
             'tugas_3' => $request->tugas_3,
             'UTS' => $request->UTS,
             'UAS' => $request->UAS,
-            'total' => $nilaiUasFinal,
             'isRemed' => $isRemed,
+            'total' => $nilaiUasFinal,
             'mapel_id' => $request->mapel_id,
             'tahun_ajaran_id' => $request->tahun_ajaran_id,
         ]);
